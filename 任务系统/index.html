@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>任务系统</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/vue.js"></script>
+</head>
+<body>
+   <div id="app" class="box">
+       <div class="left">
+           <template v-for="(getname, index) in list" >
+               <a href="####" @click="showtask(index)"><img src="img/文件夹.png">{{getname.name}}（{{alllenghth(index)}}）</a>
+               <a href="####" class="foradelete"@click="deletelist(index)"title="添加新项目">X</a>
+               <a href="####" class="foradd"@click="addtask(index)" title="删除此文件"> +</a><br>
+               <template v-if="getname.taskshow" v-for="(task, taskindex) in list[index].task" >
+                  <a href="####" class="taskleft" @click="detailshow(index,taskindex)" ><img src="img/项目.png">{{task}}（{{getname.detail[taskindex].id.length}}）</a>
+                  <a href="####" class="foradelete"@click="deletetask(index,taskindex)" title="删除此项目">X</a>
+                  <a href="####" class="foradd"@click="adddetail(index,taskindex)" title="添加新任务"> +</a><br>
+                  <template v-if="getname.details[taskindex].show" v-for="(inf, detailindex) in list[index].detail[taskindex].id" >
+                    <a href="####" class="detailsleft" @click="showinf(index,taskindex,detailindex)" ><img src="img/任务.png">{{inf}}</a>
+                    <a href="####" class="foradelete"@click="deletedetail(index,taskindex,detailindex)" title="删除此任务">X</a><br>
+                  </template>
+               </template>
+           </template>
+           <div class="addlist" @click="addlist">增加项目</div>
+           </div>
+       <div class="middle"> 
+           <template v-for="(item, index) in information[indexcount].tasknm[taskcount].detailnum" >
+          <a href="####">{{item.title}}</a><br>
+           </template>
+       </div>
+      
+       <div  class="right">
+          <input type="text" v-model="hearder" :disabled="onwrite" :placeholder='title1' class="putone" :class='{border:istrue}'>  
+          <input type="text" v-model="middletime" :disabled="onwrite":placeholder='title2' class="puttwo" :class='{border:istrue}'>
+          <textarea type="text" v-model="textartic" :disabled="onwrite":placeholder='title3' class="putthree" :class='{border:istrue}'></textarea>
+          <button @click='change' v-if="condition">保存</button>
+          <button @click='save' v-if="sedr">保存</button>
+          <button @click='bj'>编辑</button>
+       </div>
+   </div>
+</body>
+<script>
+var vm = new Vue({
+    el:'#app',
+    data:{
+        list:[{name:'百度ite',task:['任务一','任务二',],detail:[{id:['task1']},{id:['task2']}], taskshow:false, details:[{show:false},{show:false}]}],
+       information:[{tasknm:[{detailnum:[{title:'TO DO 1',fortime:'时间日期2017-4-4',article:'此处省略一万字'}]},{detailnum:[{title:'TO DO 2',fortime:'时间日期2017-4-4',article:'此处省略一万字'}]}]}],
+       hearder:'',
+        middletime:'',
+       textartic:'',
+        indexcount:0,
+        taskcount:0,
+        detailcount:'',
+        addisindex:'',
+        addistk:'',
+        addisislg:'',
+        onwrite:'true',
+        title1:'',
+        title2:'',
+        title3:'',
+        condition:false,
+        sedr:true,
+        istrue:true,
+    },
+    methods: {
+        addlist:function(){
+        var gettext = window.prompt("请输入分类名");
+        if(gettext==null || gettext==''){
+            alert('输入为空');
+        }else{
+           this.list.push({name:gettext,task:[],detail:[{id:[]}], taskshow:false, details:[]});
+           this.information.push({tasknm:[]});
+        }
+        },
+        addtask:function(index){
+            var gettext = window.prompt("请输入分类名");
+        if(gettext==null || gettext==''){
+            alert('输入为空');
+        }else{
+            this.list[index].task.push(gettext);
+            this.list[index].details.push({show:false})
+            this.list[index].detail.push({id:[]});
+            this.information[index].tasknm.push({detailnum:[]});
+        }
+        },
+        adddetail:function(index,taskindex){
+        var gettext = window.prompt("请输入分类名");
+        if(gettext==null  || gettext==''){
+            alert('输入为空');
+        }else{
+         this.list[index].detail[taskindex].id.push(gettext);
+         this.information[index].tasknm[taskindex].detailnum.push({title:'0',fortime:'0',article:'0'});
+         this.addislg=this.information[index].tasknm[taskindex].detailnum.length-1; 
+         this.addistk=taskindex;
+         this.addisindex=index; 
+         this.hearder='',
+         this.middletime='',
+         this.textartic='',
+         this.onwrite=false;
+         this.title1='请输入任务标题';
+         this.title2='请指定任务日期';
+         this.title3='请输入任务内容';
+         this. condition=true;
+         this.istrue=false;
+         this.sedr=false;
+        }
+        },
+        deletelist:function(index){
+            this.list.splice(index,1);
+        },
+        deletetask:function(index,taskindex){
+            this.list[index].task.splice(taskindex,1);
+        },
+        deletedetail:function(index,taskindex,detailindex){
+            this.list[index].detail[taskindex].id.splice(detailindex,1)
+        },
+        showtask:function(index){
+            if(this.list[index].taskshow===false){
+                this.list[index].taskshow=true;
+            }else{
+                this.list[index].taskshow=false;
+            }
+            
+        },
+        detailshow:function(index,taskindex){
+            if(this.list[index].details[taskindex].show===false){  
+                this.list[index].details[taskindex].show=true;
+            }else{
+                this.list[index].details[taskindex].show=false;
+            }
+            this.indexcount=index;
+            this.taskcount=taskindex;
+        },
+        showinf:function(index,taskindex,detailindex){
+            var which=this.information[index].tasknm[taskindex].detailnum[detailindex]
+            this.hearder=which.title;
+            this.middletime=which.fortime;
+            this.textartic=which.article;
+            this.indexcount=index;
+            this.taskcount=taskindex;
+            this.detailcount=detailindex;
+        },
+        change:function(){
+            var a =this.information[this.addisindex].tasknm[this.addistk].detailnum[this.addislg];
+              a.title=this.hearder;
+              a.fortime=this.middletime;
+              a.article=this.textartic;
+              this.onwrite=true;
+         this.title1='';
+         this.title2='';
+         this.title3='';
+         this.condition=false;
+         this.istrue=true;
+         this.sedr=true;
+        },
+        save:function(){
+              var a =this.information[this.indexcount].tasknm[this.taskcount].detailnum[this.detailcount];
+              a.title=this.hearder;
+              a.fortime=this.middletime;
+              a.article=this.textartic;
+              this.onwrite=true;
+              this.istrue=true;
+        },
+        bj:function(){
+         this.onwrite=false;
+         this.title1='请输入任务标题';
+         this.title2='请指定任务日期';
+         this.title3='请输入任务内容';
+         this.istrue=false;
+        },
+        alllenghth:function(index){ //总长度计算
+            var count=0;
+            for(i=0;i<this.list[index].task.length;i++){
+                count+=this.list[index].detail[i].id.length
+            };
+            return count;
+        }
+
+    },
+  
+        
+})
+var geta =document.getElementsByTagName('a');
+for(var i=0;i<geta.length;i++){
+
+}
+</script>
+</html>
